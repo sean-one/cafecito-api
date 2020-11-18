@@ -10,22 +10,14 @@ const validIDSchema = yup.object().shape({
 const createClientSchema = yup.object().shape({
     name: yup
         .string()
-        .min(5, 'name too short')
-        .max(30, 'name too long')
-        .required(),
+        .min(5, 'must be more then 5 character')
+        .max(30, 'fails max characters validation')
+        .required('missing required field'),
     
     email: yup
         .string()
         .email()
-        .required(),
-    
-    // created_at: yup
-    //     .string()
-    //     .default(() => new Date()),
-
-    // updated_at: yup
-    //     .string()
-    //     .default(() => new Date())
+        .required('missing required field')
 });
 
 const updateClientSchema = yup.object().shape({

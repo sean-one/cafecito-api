@@ -5,8 +5,8 @@ exports.up = function(knex) {
 
         orders
             .integer('client_id')
-            .unsigned()
-            .notNullable()
+            // .unsigned()
+            // .notNullable()
             // keep customer id in event parent customer is deleted
             .references('id')
             .inTable('clients')
