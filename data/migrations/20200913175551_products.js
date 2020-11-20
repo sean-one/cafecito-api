@@ -1,7 +1,7 @@
 
 
-exports.up = function(knex) {
-    return knex.schema.createTable('products', products => {
+exports.up = async function(knex) {
+    await knex.schema.createTable('products', products => {
         products.increments('id');
 
         products
@@ -25,6 +25,8 @@ exports.up = function(knex) {
         
         products.timestamps(true, true)
     })
+    // add constraint to keep field a positive number
+    await knex.schema.raw(`ALTER TABLE products ADD CONSTRAINT positive_inventory CHECK (item_inventory >= 0);`)
   
 };
 

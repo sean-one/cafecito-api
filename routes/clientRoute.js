@@ -99,7 +99,7 @@ router.delete('/:id', async (req, res, next) => {
         const id = await validIDSchema.validate(req.params);
         const recordsDeleted = await db.remove(id)
         if (recordsDeleted >= 1) {
-            res.status(200).json({ message: 'client has been deleted' });
+            res.status(204).json();
         } else {
             // ID not found
             const error = new Error('invalid_id');
@@ -108,9 +108,9 @@ router.delete('/:id', async (req, res, next) => {
             throw error;
         }
     } catch (error) {
-        // ID valid validation
+        // ID failed validation
         if (error.errors) {
-            res.status(400).json({ message: 'bad request', path: error.path, error: `${error.params.path} is not type` });
+            res.status(400).json({ message: 'bad request', path: error.path, error: `${error.params.path} failed validation` });
         } else {
             next(error)
         }

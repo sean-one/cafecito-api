@@ -8,7 +8,6 @@ const router = express.Router();
 
 // GET all products
 router.get('/', (req, res) => {
-    // console.log(req.query)
     db.find()
         .then(products => {
             res.status(200).json(products);
@@ -20,21 +19,22 @@ router.get('/', (req, res) => {
 router.get('/:id', async (req, res, next) => {
     try {
         const id = await validIDSchema.validate(req.params);
-    
-        db.findById(id)
-            .then(product => {
-                if (product) {
-                    res.status(200).json(product);
-                } else {
-                    res.status(404).json({ message: `no product with the id: ${id} was found` });
-                }
-            })
-            .catch(err => res.status(500).json(err));
-    } catch (error) {
-        if (error) {
-            next(error);
+        const product = await db.findById(id);
+        if (product) {
+            res.status(200).json(product);
         } else {
-            res.status(500).json({ message: 'unable to get product by id'})
+            // invalid product ID
+            const error = new Error('invalid_id');
+            error.message = 'not found'
+            error.status = 404;
+            throw error;
+        }
+    } catch (error) {
+        if (error.errors) {
+            // ID failed validation
+            res.status(400).json({ message: 'bad request', error: `${error.path} failed validation` })
+        } else {
+            next(error);
         }
     }
 });
@@ -43,22 +43,22 @@ router.get('/:id', async (req, res, next) => {
 router.post('/', async (req, res, next) => {
     try {
         const validProduct = await createProductSchema.validate(req.body);
-        const checkForProduct = await db.findByItem(validProduct.item);
-        if (!checkForProduct) {
-            try {
-                const product_id = await db.add(validProduct);
-                res.status(201).json(product_id);
-            } catch (error) {
-                res.status(500).json({ error: 'unable to add product to database' })
-            }
+        const product = await db.add(validProduct);
+        if (product) {
+            res.status(201).json(product);
         } else {
-            res.status(200).json(checkForProduct);
+            throw error;
         }
     } catch (error) {
-        if (error) {
-            next(error);
+        // product item name failed pg unique constraint
+        if (error.constraint) {
+            res.status(409).json({ message: 'duplicate product | unable to create'})
+        }
+        // request body failed validation
+        else if (error.errors) {
+            res.status(400).json({ message: 'bad request', path: error.path, error: error.errors[0] });
         } else {
-            res.status(500).json({ message: 'error creating the product', error: error });
+            next(error);
         }
     }
 });
@@ -69,12 +69,24 @@ router.put('/addProduct/:id', async (req, res, next) => {
         const id = await validIDSchema.validate(req.params);
         const amount = await validAmountSchema.validate(req.body);
         const added = await db.addProduct(id, amount)
-        res.status(201).json(added)
-    } catch (error) {
-        if (error) {
-            next(error);
+        if (added.length >= 1) {
+            res.status(201).json(added)
         } else {
-            res.status(500).json({ message: 'error adding product', error: error });
+            const error = new Error('invalid_id');
+            error.message = 'not found';
+            error.status = 404;
+            throw error;
+        }
+    } catch (error) {
+        // ID or amount failed validation
+        if (error.errors) {
+            res.status(400).json({
+                message: 'bad request',
+                path: error.path,
+                error: `should be type ${error.params.type || error.errors[0]}`
+            })
+        } else {
+            next(error);
         }
     }
 });
@@ -87,10 +99,19 @@ router.put('/removeProduct/:id', async (req, res, next) => {
         const removed = await db.removeProduct(id, amount)
         res.status(201).json(removed)
     } catch (error) {
-        if (error) {
-            next(error);
+        // params and or body fails validation
+        if (error.errors) {
+            res.status(400).json({
+                message: 'bad request',
+                path: error.path,
+                error: `should be type ${error.params.type || error.errors[0] }`
+            })
+        } 
+        // fails positive inventory validation
+        else if (error.constraint) {
+            res.status(409).json({ message: 'not enough inventory to complete' })
         } else {
-            res.status(500).json({ message: 'error removing product', error: error });
+            next(error);
         }
     }
 });
@@ -100,23 +121,30 @@ router.put('/:id', async (req, res, next) => {
     try {
         const id = await validIDSchema.validate(req.params);
         const validProduct = await updateProductSchema.validate(req.body);
-        
-        db.update(id, validProduct)
-            .then(count => {
-                if (count) {
-                    res.status(200).json({ message: `${count} product updated` });
-                } else {
-                    res.status(404).json({ message: `product with the id: ${id} not found` });
-                }
-            })
-            .catch(error => {
-                throw error;
-            })
-    } catch (error) {
-        if (error) {
-            next(error);
+        const updatedProduct = await db.update(id, validProduct)
+        if (updatedProduct.length < 1) {
+            const error = new Error('invalid_id');
+            error.message = 'not found';
+            error.status = 404;
+            throw error;
         } else {
-            res.status(500).json({ message: 'server error', err });
+            res.status(202).json(updatedProduct);
+        }
+    } catch (error) {
+        // request params and or body failed verification
+        if (error.errors) {
+            console.log(error);
+            res.status(400).json({
+                message: 'bad request',
+                path: error.path,
+                error: `should be type ${error.params.type || error.errors[0] }`
+            })
+        }
+        // fails unique product name
+        else if (error.constraint) {
+            res.status(409).json({ message: 'product already exists' })
+        } else {
+            next(error);
         }
     }
 });
@@ -125,20 +153,22 @@ router.put('/:id', async (req, res, next) => {
 router.delete('/:id', async (req, res, next) => {
     try {
         const id = await validIDSchema.validate(req.params);
-        db.remove(id)
-            .then(count => {
-                if (count < 1) {
-                    res.status(404).json({ message: `invalid product id '${id} not found'` });
-                } else {
-                    res.status(200).json({ message: 'product has been deleted' });
-                }
-            })
-            .catch(err => res.status(500).json({ message: 'server error', err }));
-    } catch (error) {
-        if (error) {
-            next(error);
+        const recordsDeleted = await db.remove(id)
+        if (recordsDeleted >= 1) {
+            res.status(204).json()
         } else {
-            res.status(500).json({ message: 'error deleting the product' })
+            // ID not found
+            const error = new Error('invalid_id');
+            error.message = 'not found';
+            error.status = 404;
+            throw error;
+        }
+    } catch (error) {
+        // ID failed validation
+        if (error.errors) {
+            res.status(400).json({ message: 'bad request', path: error.path, error: `${error.params.path} failed validation` });
+        } else {
+            next(error);
         }
     }
 });
