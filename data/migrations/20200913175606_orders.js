@@ -5,12 +5,10 @@ exports.up = function(knex) {
 
         orders
             .integer('client_id')
-            // .unsigned()
-            // .notNullable()
-            // keep customer id in event parent customer is deleted
+            .unsigned()
+            .notNullable()
             .references('id')
             .inTable('clients')
-            .onDelete('NO ACTION');
         
         orders
             .date('order_date')
@@ -20,7 +18,7 @@ exports.up = function(knex) {
         orders
             .float('order_total')
         
-        orders.timestamps(true, true);
+        orders.timestampstz(true, true);
     })
 };
 

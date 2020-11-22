@@ -9,7 +9,6 @@ const validIDSchema = yup.object().shape({
 });
 
 
-
 // client table validation
 const createClientSchema = yup.object().shape({
     name: yup
@@ -38,7 +37,6 @@ const updateClientSchema = yup.object().shape({
         .date()
         .default(() => new Date())
 });
-
 
 
 // product table validation
@@ -81,6 +79,7 @@ const updateProductSchema = yup.object().shape({
         .date()
         .default(() => new Date())
 });
+
 const validAmountSchema = yup.object().shape({
     amount: yup
         .number()
@@ -92,6 +91,8 @@ const validAmountSchema = yup.object().shape({
         .default(() => new Date())
 })
 
+
+// order / orderlines validation
 const orderlineSchema = yup.object().shape({
     product_id: yup
         .number()
@@ -105,13 +106,13 @@ const orderlineSchema = yup.object().shape({
         .number()
         .positive('value must be positive'),
     
-    created_at: yup
-        .date()
-        .default(() => new Date()),
+    // created_at: yup
+    //     .date()
+    //     .default(() => new Date()),
     
-    updated_at: yup
-        .date()
-        .default(() => new Date())
+    // updated_at: yup
+    //     .date()
+    //     .default(() => new Date())
 });
 
 const createOrderSchema = yup.object().shape({
@@ -129,16 +130,16 @@ const createOrderSchema = yup.object().shape({
         .positive('value must be positive')
         .required('missing field is required'),
     
-    orderlines: yup
-        .array(orderlineSchema),
+    // orderlines: yup
+    //     .array(orderlineSchema),
     
-    created_at: yup
-        .date()
-        .default(() => new Date()),
+    // created_at: yup
+    //     .date()
+    //     .default(() => new Date()),
 
-    updated_at: yup
-        .date()
-        .default(() => new Date())
+    // updated_at: yup
+    //     .date()
+    //     .default(() => new Date())
 });
 
 const updateOrderSchema = yup.object().shape({

@@ -133,12 +133,11 @@ router.put('/:id', async (req, res, next) => {
     } catch (error) {
         // request params and or body failed verification
         if (error.errors) {
-            console.log(error);
             res.status(400).json({
                 message: 'bad request',
                 path: error.path,
-                error: `should be type ${error.params.type || error.errors[0] }`
-            })
+                error: `should be type ${error.params.type || error.errors[0]}`
+            });
         }
         // fails unique product name
         else if (error.constraint) {

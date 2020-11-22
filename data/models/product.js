@@ -62,7 +62,6 @@ async function removeProduct(id, remove) {
         .update({ updated_at: remove.updated_at });
 }
 
-
 function update(id, changes) {
     return db('products')
         .where(id)
