@@ -106,13 +106,6 @@ const orderlineSchema = yup.object().shape({
         .number()
         .positive('value must be positive'),
     
-    // created_at: yup
-    //     .date()
-    //     .default(() => new Date()),
-    
-    // updated_at: yup
-    //     .date()
-    //     .default(() => new Date())
 });
 
 const createOrderSchema = yup.object().shape({
@@ -130,16 +123,8 @@ const createOrderSchema = yup.object().shape({
         .positive('value must be positive')
         .required('missing field is required'),
     
-    // orderlines: yup
-    //     .array(orderlineSchema),
-    
-    // created_at: yup
-    //     .date()
-    //     .default(() => new Date()),
-
-    // updated_at: yup
-    //     .date()
-    //     .default(() => new Date())
+    orderlines: yup
+        .array(orderlineSchema),
 });
 
 const updateOrderSchema = yup.object().shape({

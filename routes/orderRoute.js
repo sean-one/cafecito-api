@@ -72,8 +72,6 @@ router.post('/', async (req, res, next) => {
         if (newOrder) {
             res.status(201).json(newOrder);
         } else {
-            const error = new Error('NO_NEWORDER');
-            error.message = 'something went wrong';
             throw error;
         }
     } catch (error) {
@@ -85,11 +83,13 @@ router.post('/', async (req, res, next) => {
                 error: `should be type ${error.params.type || error.errors[0]}`
             });
         }
-        else if (error.table = 'orders') {
-            console.log(error)
-            res.status(404).json({
-                message: 'invalid_id',
-            })
+        // client id not found
+        else if (error.constraint == 'orders_client_id_foreign') {
+            res.status(409).json({ message: 'invalid client id | not found' });
+        }
+        // product id not found
+        else if (error.constraint == 'orderlines_product_id_foreign') {
+            res.status(409).json({ message: 'invalid product id | not found' });
         }
         else {
             next(error);

@@ -73,9 +73,8 @@ async function add(order) {
     
             return createdOrder;
         })
-        
+
     } catch (error) {
-        console.log(error)
         throw error;
 
     }
