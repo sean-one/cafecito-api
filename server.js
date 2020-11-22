@@ -1,8 +1,4 @@
 require('dotenv').config();
-/*
-environment variables needed
-NODE_ENV, DB_HOST, DB_PORT, DB_USER, DB_USER, DATABASE
-*/
 
 const express = require('express');
 const app = express();

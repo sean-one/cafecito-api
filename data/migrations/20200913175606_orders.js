@@ -18,7 +18,7 @@ exports.up = function(knex) {
         orders
             .float('order_total')
         
-        orders.timestampstz(true, true);
+        orders.timestamps(true, true);
     })
 };
 
