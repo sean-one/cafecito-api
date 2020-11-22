@@ -16,26 +16,24 @@ router.get('/', (req, res) => {
 });
 
 // GET order details by order ID
-router.get('/order/:id', async (req, res) => {
+router.get('/order/:id', async (req, res, next) => {
     try {
         const id = await validIDSchema.validate(req.params);
-    
-        db.findByOrderId(id)
-            .then(orders => {
-                if (orders) {
-                    res.status(200).json(orders);
-                } else {
-                    res.status(404).json({ message: `no order with the id: ${id} was found` });
-                }
-            })
-            .catch(err => {
-                throw err;
-            });
-    } catch (error) {
-        if (error) {
-            next(error);
+        const orderlines = await db.findByOrderId(id)
+        if (orderlines.length >= 1) {
+            res.status(200).json(orderlines);
         } else {
-            res.status(500).json({ message: 'error finding order by id' });
+            // invalid order ID
+            const error = new Error('invalid_id');
+            error.message = 'not found';
+            error.status = 404;
+            throw error;
+        }
+    } catch (error) {
+        if (error.errors) {
+            res.status(400).json({ message: 'bad request', error: `${error.path} failed validation` });
+        } else {
+            next(error);
         }
     }
 });
