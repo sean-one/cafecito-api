@@ -16,7 +16,7 @@ async function findByDay(day) {
     return await db('products')
         .join('menu_schedule', 'menu_schedule.product_id', 'products.id')
         .select('weekday','product_id', 'item', 'item_description', 'item_price', 'item_inventory')
-        .where({ weekday: day.weekday});
+        .where({ weekday: day.weekday });
 }
 
 async function updateDaysMenu(day, dailyupdate) {

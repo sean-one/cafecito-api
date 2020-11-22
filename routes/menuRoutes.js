@@ -10,47 +10,58 @@ const router = express.Router();
 router.get('/', (req, res) => {
     db.find()
         .then(fullMenu => {
-            if (fullMenu) {
-                res.status(200).json(fullMenu);
-            } else {
-                res.status(404).json({ message: 'unable to get menu' })
-            }
+            res.status(200).json(fullMenu);
         })
-        .catch(err => res.status(500).json(err));
+        .catch(err => { throw err });
 })
 
 // GET menu for specific day
 router.get('/:weekday', async (req, res, next) => {
     try {
         const weekday = await validWeekdaySchema.validate(req.params)
-        db.findByDay(weekday)
-            .then(dailyproduct => {
-                if (dailyproduct) {
-                    res.status(200).json(dailyproduct);
-                } else {
-                    res.status(404).json({ message: `no day ${weekday.weekday}`})
-                }
-            })
-            .catch(err => res.status(500).json(err));
-    } catch (error) {
-        if (error) {
-            next(error);
+        const dailyMenu = await db.findByDay(weekday)
+        if (dailyMenu) {
+            res.status(200).json(dailyMenu);
         } else {
-            res.status(500).json({ message: 'error finding menu day', error: error });
+            const error = new Error('invalid_day');
+            error.message = 'not found';
+            error.status = 404;
+            throw error;
+        }
+    } catch (error) {
+        // weekday failed validation
+        if (error.errors) {
+            console.log(error);
+            res.status(400).json({ message: `${error.path} should be ${error.type} [${error.params.values}]` });
+        } else {
+            next(error);
         }
     }
     
 })
 
 // POST a daily update
-router.post('/update/:weekday', async (req, res) => {
-    const weekday = await validWeekdaySchema.validate(req.params);
-    const dailyupdate = await validDailyMenu.validate(req.body);
-    db.updateDaysMenu(weekday, dailyupdate)
-        .then(count => {
-            res.status(200).json(count);
-        })
-        .catch(err => res.status(500).json(err));
+router.post('/update/:weekday', async (req, res, next) => {
+    try {
+        const weekday = await validWeekdaySchema.validate(req.params);
+        const dailyupdate = await validDailyMenu.validate(req.body);
+        const updatedMenu = await db.updateDaysMenu(weekday, dailyupdate)
+        if (updatedMenu) {
+            res.status(200).json(updatedMenu);
+        } else {
+            const error = new Error('invalid_weekday');
+            error.message = 'not found';
+            error.status = 404;
+            throw error;
+        }
+    } catch (error) {
+        // weekday or request body failed validation
+        if (error.errors) {
+            res.status(400).json({ message: 'yup validation failed'})
+        } else {
+            next(error);
+        }
+    }
 })
 
 module.exports = router;

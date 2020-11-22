@@ -137,6 +137,8 @@ const updateOrderSchema = yup.object().shape({
         .default(() => new Date())
 });
 
+
+// menu_schedule validation
 const validWeekdaySchema = yup.object().shape({
     weekday: yup
         .mixed().oneOf(["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"])
@@ -152,14 +154,6 @@ const validDailyMenu = yup.array().of(yup.object().shape({
         .number()
         .positive('value must be positive')
         .required('missing field is required'),
-    
-    created_at: yup
-        .date()
-        .default(() => new Date()),
-    
-    updated_at: yup
-        .date()
-        .default(() => new Date())
 }));
 
 

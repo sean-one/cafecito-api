@@ -1,6 +1,6 @@
 
-exports.up = function(knex) {
-    return knex.schema.createTable('menu_schedule', menu_schedule => {
+exports.up = async function(knex) {
+    await knex.schema.createTable('menu_schedule', menu_schedule => {
         menu_schedule.increments('id');
 
         menu_schedule
@@ -16,8 +16,9 @@ exports.up = function(knex) {
             .onDelete('CASCADE');
 
         menu_schedule.timestamps(true, true);
-      
   })
+  // add constraint to keep unique product id per weekday
+  await knex.schema.raw(`ALTER TABLE menu_schedule ADD CONSTRAINT one_per_day UNIQUE (weekday, product_id);`)
 };
 
 exports.down = function(knex) {
