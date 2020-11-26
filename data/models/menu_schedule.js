@@ -20,14 +20,19 @@ async function findByDay(day) {
 }
 
 async function updateDaysMenu(day, dailyupdate) {
-    return await db('menu_schedule').where({ weekday: day.weekday }).del()
-        .then(async count => {
-            return await db('menu_schedule').insert(dailyupdate).into('menu_schedule');
-        })
-        .then(added => {
-            return added
-        })
-        .catch(err => {
-            throw err;
-        })
+    const updatedMenu = []
+    for (item in dailyupdate.products) {
+        updatedMenu.push( {weekday: `${day.weekday}`, product_id: item} )
+    }
+    console.log(updatedMenu)
+    // return await db('menu_schedule').where({ weekday: day.weekday }).del()
+    //     .then(async count => {
+    //         return await db('menu_schedule').insert(dailyupdate).into('menu_schedule');
+    //     })
+    //     .then(added => {
+    //         return added
+    //     })
+    //     .catch(err => {
+    //         throw err;
+    //     })
 }
