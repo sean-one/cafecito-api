@@ -146,10 +146,6 @@ const validWeekdaySchema = yup.object().shape({
 });
 
 const validDailyMenu = yup.array().of(yup.object().shape({
-    weekday: yup
-        .mixed().oneOf(["sunday","monday","tuesday","wednesday","thursday","friday","saturday"])
-        .required('missing field is required'),
-    
     product_id: yup
         .number()
         .positive('value must be positive')

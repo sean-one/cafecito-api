@@ -43,10 +43,8 @@ router.get('/:weekday', async (req, res, next) => {
 // POST a daily update
 router.post('/update/:weekday', async (req, res, next) => {
     try {
-        const weekday = req.params;
-        const dailyupdate = req.body;
-        // const weekday = await validWeekdaySchema.validate(req.params);
-        // const dailyupdate = await validDailyMenu.validate(req.body);
+        const weekday = await validWeekdaySchema.validate(req.params);
+        const dailyupdate = await validDailyMenu.validate(req.body);
         const updatedMenu = await db.updateDaysMenu(weekday, dailyupdate)
         if (updatedMenu) {
             res.status(200).json(updatedMenu);
@@ -57,9 +55,11 @@ router.post('/update/:weekday', async (req, res, next) => {
             throw error;
         }
     } catch (error) {
-        console.log(error)
+        if (error.code = '23503') {
+            res.status(404).json({ message: 'product not found'})
+        }
         // weekday or request body failed validation
-        if (error.errors) {
+        else if (error.errors) {
             res.status(400).json({ message: 'yup validation failed'})
         } else {
             next(error);
