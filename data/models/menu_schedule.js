@@ -3,7 +3,8 @@ const db = require('../dbConfig');
 module.exports = {
     find,
     findByDay,
-    updateDaysMenu
+    updateDaysMenu,
+    closed
 }
 
 async function find() {
@@ -43,8 +44,12 @@ async function updateDaysMenu(day, dailyupdate) {
             .join('menu_schedule', 'menu_schedule.product_id', 'products.id')
             .select('weekday', 'product_id', 'item', 'item_description', 'item_price', 'item_inventory')
             .where({ weekday: day.weekday });
-            
+
     } catch (error) {
         throw error;
     }
+}
+
+async function closed(day) {
+    return await db('menu_schedule').where({ weekday: day.weekday}).del();
 }

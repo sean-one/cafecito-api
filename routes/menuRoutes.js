@@ -67,4 +67,19 @@ router.post('/update/:weekday', async (req, res, next) => {
     }
 })
 
+// DELETE a days menu with out updating (closed)
+router.delete('/closed/:weekday', async (req, res, next) => {
+    try {
+        const weekday = await validWeekdaySchema.validate(req.params);
+        const recordsDeleted = await db.closed(weekday)
+        res.status(204).json()
+    } catch (error) {
+        if (error.errors) {
+            res.status(400).json({ message: 'param validation failed' })
+        } else {
+            next(error)
+        }
+    }
+})
+
 module.exports = router;
