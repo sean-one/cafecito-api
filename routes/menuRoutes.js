@@ -46,6 +46,7 @@ router.post('/update/:weekday', async (req, res, next) => {
         const weekday = await validWeekdaySchema.validate(req.params);
         const dailyupdate = await validDailyMenu.validate(req.body);
         const updatedMenu = await db.updateDaysMenu(weekday, dailyupdate)
+        console.log(updatedMenu)
         if (updatedMenu) {
             res.status(200).json(updatedMenu);
         } else {

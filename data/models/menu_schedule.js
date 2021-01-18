@@ -30,13 +30,13 @@ async function updateDaysMenu(day, dailyupdate) {
             for (let product of dailyupdate) {
                 updatedMenu.push({ weekday: `${day.weekday}`, product_id: `${product.product_id}` })
             }
-            
+
             // delete existing days menu (fresh start)
             await db('menu_schedule').transacting(trx).where({ weekday: day.weekday }).del()
-            
+            console.log(updatedMenu);
             // insert the new days menu
             await db('menu_schedule').transacting(trx).insert(updatedMenu).into('menu_schedule');
-
+            console.log('new daily entered')
         })
 
         // return days updated menu
@@ -51,5 +51,6 @@ async function updateDaysMenu(day, dailyupdate) {
 }
 
 async function closed(day) {
+    // deletes the schedule for a specified weekday
     return await db('menu_schedule').where({ weekday: day.weekday}).del();
 }
