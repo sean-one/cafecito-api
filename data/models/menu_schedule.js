@@ -33,10 +33,8 @@ async function updateDaysMenu(day, dailyupdate) {
 
             // delete existing days menu (fresh start)
             await db('menu_schedule').transacting(trx).where({ weekday: day.weekday }).del()
-            console.log(updatedMenu);
             // insert the new days menu
             await db('menu_schedule').transacting(trx).insert(updatedMenu).into('menu_schedule');
-            console.log('new daily entered')
         })
 
         // return days updated menu
