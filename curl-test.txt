@@ -1,0 +1,94 @@
+##### CLIENT ROUTES #####
+
+# GET all clients
+#curl http://localhost:3333/api/clients
+
+# GET single client by ID
+#curl http://localhost:3333/api/clients/6
+
+# POST (create) new client
+#curl -X POST -H "Content-Type: application/json" -d "{\"name\":\"SeanOne\",\"email\":\"basement365@gmail.com\"}" http://localhost:3333/api/clients
+
+# PUT (update) cliebt by ID
+#curl -X PUT -H "Content-Type: application/json" -d "{\"email\":\"obsounds@gmail.com\"}" http://localhost:3333/api/clients/6
+
+# DELETE a client by ID
+#curl -X DELETE http://localhost:3333/api/clients/6
+
+
+###############################################################################################################
+
+##### PRODUCT ROUTES #####
+
+# GET all products
+#curl http://localhost:3333/api/products
+
+# GET single product by ID
+#curl http://localhost:3333/api/products/1
+
+# POST (create) new product
+#curl -X POST -H "Content-Type: application/json" -d "{\"item\":\"medicated cafecito\",\"item_description\":\"cafecito coffee enhanced with thc infused water\",\"item_price\":15,\"item_inventory\":10}" http://localhost:3333/api/products
+
+# PUT (update) product by ID
+#curl -X PUT -H "Content-Type: application/json" -d "{\"item_description\":\"thc infused cafecito coffee\"}" http://localhost:3333/api/products/8
+
+# PUT add (addProduct) to product by ID
+#curl -X PUT -H "Content-Type: application/json" -d "{\"amount\":7}" http://localhost:3333/api/products/addProduct/1
+
+# PUT remove (removeProduct) from product by ID
+#curl -X PUT -H "Content-Type: application/json" -d "{\"amount\":8}" http://localhost:3333/api/products/removeProduct/1
+
+# DELETE a product by ID
+#curl -X DELETE http://localhost:3333/api/products/8
+
+
+###############################################################################################################
+
+##### ORDER ROUTES #####
+
+# GET all orders
+#curl http://localhost:3333/api/orders
+
+# GET single order by ID
+#curl http://localhost:3333/api/orders/1
+
+# GET orders by CLIENT ID
+#curl http://localhost:3333/api/orders/client/2
+
+# POST (create) a new order
+#curl -X POST -H "Content-Type: application/json" -d "{\"client_id\":2,\"order_total\":10,\"orderlines\":[{\"product_id\":2,\"quantity\":1,\"price_each\":10}]}" http://localhost:3333/api/orders
+
+# DELETE an order
+#curl -X DELETE http://localhost:3333/api/orders/7
+
+
+###############################################################################################################
+
+##### ORDERLINE ROUTES #####
+
+# GET all orderlines
+#curl http://localhost:3333/api/orderlines
+
+# GET orderlines by ORDER ID
+#curl http://localhost:3333/api/orderlines/order/2
+
+
+###############################################################################################################
+
+##### MENU ROUTES #####
+
+# GET full menu
+#curl http://localhost:3333/api/menu
+
+# GET daily menu
+#curl http://localhost:3333/api/menu/monday
+
+# POST (create/update) daily menu
+#curl -X POST -H "Content-Type: application/json" -d "[{\"product_id\":1},{\"product_id\":3},{\"product_id\":5}]" http://localhost:3333/api/menu/update/monday
+#curl -X POST -H "Content-Type: application/json" -d "[{\"product_id\":4}]" http://localhost:3333/api/menu/update/monday
+
+# DELETE a daily menu (closed)
+#curl -X DELETE http://localhost:3333/api/menu/closed/monday
+
+
+###############################################################################################################
