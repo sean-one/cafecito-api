@@ -10,6 +10,7 @@ const router = express.Router();
 router.get('/', (req, res) => {
     db.find()
         .then(products => {
+            res.header("Access-Control-Allow-Origin", "*");
             res.status(200).json(products);
         })
         .catch(err => res.status(500).json(err));
