@@ -10,7 +10,6 @@ const router = express.Router();
 router.get('/', (req, res) => {
     db.find()
         .then(fullMenu => {
-            res.header("Access-Control-Allow-Origin", "*");
             res.status(200).json(fullMenu);
         })
         .catch(err => { throw err });
@@ -22,7 +21,6 @@ router.get('/', (req, res) => {
             const weekday = await validWeekdaySchema.validate(req.params)
             const dailyMenu = await db.findByDay(weekday)
             if (dailyMenu) {
-                res.header("Access-Control-Allow-Origin", "*");
                 res.status(200).json(dailyMenu);
             } else {
                 const error = new Error('invalid_day');
