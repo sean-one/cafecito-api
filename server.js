@@ -3,6 +3,7 @@ require('dotenv').config();
 const express = require('express');
 const app = express();
 const morgan = require('morgan');
+const cors = require('cors');
 
 // import routes
 const clientRouter = require('./routes/clientRoute');
@@ -14,6 +15,7 @@ const menuRouter = require('./routes/menuRoutes');
 app.use(morgan('dev'));
 
 app.use(express.json())
+app.use(cors())
 app.use('/api/clients', clientRouter);
 app.use('/api/products', productRouter);
 app.use('/api/orders', orderRouter);
