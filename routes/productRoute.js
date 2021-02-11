@@ -95,12 +95,8 @@ router.put('/addProduct/:id', async (req, res, next) => {
 router.put('/removeProduct/:id', async (req, res, next) => {
     try {
         const id = await validIDSchema.validate(req.params);
-        console.log('checked id')
         const amount = await validAmountSchema.validate(req.body);
-        console.log('checked amount')
         const removed = await db.removeProduct(id, amount)
-        console.log('remove product')
-        // res.header("Access-Control-Allow-Origin", "*").status(201).json(removed);
         res.status(201).json(removed)
     } catch (error) {
         // params and or body fails validation
