@@ -13,6 +13,7 @@ const orderlineRouter = require('./routes/orderlineRoute');
 const menuRouter = require('./routes/menuRoutes');
 
 app.use(morgan('dev'));
+// app.use(morgan(':method | :date[web] | :url :status :response-time ms'));
 
 app.use(express.json())
 app.use(cors())
