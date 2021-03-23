@@ -4,6 +4,7 @@ const express = require('express');
 const app = express();
 const morgan = require('morgan');
 const cors = require('cors');
+const session = require('express-session');
 
 // import routes
 const clientRouter = require('./routes/clientRoute');
@@ -16,7 +17,27 @@ app.use(morgan('dev'));
 // app.use(morgan(':method | :date[web] | :url :status :response-time ms'));
 
 app.use(express.json())
-app.use(cors())
+app.use(cors({
+    origin: ["http://localhost:3000"],
+    methods: ["GET", "POST"],
+    credentials: true
+}));
+
+app.use(session({
+    secret: 'testsecret',
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+        httpOnly: true,
+        maxAge: 60000
+    }
+}))
+
+// app.use((req, res, next) => {
+//     console.log(req.session);
+//     next()
+// });
+
 app.use('/api/clients', clientRouter);
 app.use('/api/products', productRouter);
 app.use('/api/orders', orderRouter);

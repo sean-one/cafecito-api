@@ -63,6 +63,33 @@ router.post('/', async (req, res, next) => {
     }
 });
 
+// Client login
+router.post('/login', async (req, res, next) => {
+    try {
+        const username = req.body.username;
+        const email = req.body.email;
+        const password = req.body.password;
+        const foundUser = await db.findByUsername(username);
+        // console.log(foundUser);
+        if(!foundUser) {
+            res.status(404).json({ message: 'username not found'});
+            // console.log('user not found');
+        } else if(foundUser.email != email) {
+            res.status(400).json({ message: 'username and email do not match'})
+            // console.log('got em', foundUser)
+        } else {
+            // console.log(req.session)
+            // req.session.isLoggedIn = true;
+            // console.log(req.session)
+            //!res.redirect(200, 'http://localhost:3000');
+            // res.status(200).json({ message: 'everything looks good'})
+        }
+    } catch (error) {
+        console.log(error)
+        next(error)
+    }
+})
+
 // PUT (update) client by ID
 router.put('/:id', async (req, res, next) => {
     try {
