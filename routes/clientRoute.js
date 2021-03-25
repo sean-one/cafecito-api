@@ -66,11 +66,14 @@ router.post('/', async (req, res, next) => {
 // Client login
 router.post('/login', async (req, res, next) => {
     try {
+        if(req.session.authenticated) {
+            console.log(req.session);
+        }
         const username = req.body.username;
         const email = req.body.email;
         const password = req.body.password;
         const foundUser = await db.findByUsername(username);
-        // console.log(foundUser);
+        // console.log(req.session);
         if(!foundUser) {
             res.status(404).json({ message: 'username not found'});
             // console.log('user not found');
@@ -81,7 +84,11 @@ router.post('/login', async (req, res, next) => {
             // console.log(req.session)
             // req.session.isLoggedIn = true;
             // console.log(req.session)
-            //!res.redirect(200, 'http://localhost:3000');
+            req.session.authenticated = true
+            req.session.user = 'john'
+            // console.log(req.session)
+            res.redirect(200, 'http://localhost:3000/');
+            // console.log(res)
             // res.status(200).json({ message: 'everything looks good'})
         }
     } catch (error) {

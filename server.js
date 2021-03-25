@@ -7,6 +7,7 @@ const cors = require('cors');
 const session = require('express-session');
 
 // import routes
+const authRouter = require('./routes/authRoute');
 const clientRouter = require('./routes/clientRoute');
 const productRouter = require('./routes/productRoute');
 const orderRouter = require('./routes/orderRoute');
@@ -18,18 +19,19 @@ app.use(morgan('dev'));
 
 app.use(express.json())
 app.use(cors({
-    origin: ["http://localhost:3000"],
+    origin: [process.env.FRONTEND_CLIENT],
     methods: ["GET", "POST"],
     credentials: true
 }));
 
 app.use(session({
-    secret: 'testsecret',
+    secret: process.env.SESSION_SECRET,
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
     cookie: {
-        httpOnly: true,
-        maxAge: 60000
+        httpOnly: false,
+        maxAge: parseInt(process.env.SESSION_MAXAGE)
+        // maxAge: 20 * 60 * 60 * 1000
     }
 }))
 
@@ -38,6 +40,7 @@ app.use(session({
 //     next()
 // });
 
+app.use('/auth', authRouter);
 app.use('/api/clients', clientRouter);
 app.use('/api/products', productRouter);
 app.use('/api/orders', orderRouter);
@@ -64,7 +67,7 @@ app.get('/', (req, res) => {
     res.send('WELCOME TO THE ROOT')
 })
 
-const port = process.env.PORT || 3333
+const port = process.env.PORT
 
 app.listen(port, () => {
     console.log(`Server running on port: ${port}.`);

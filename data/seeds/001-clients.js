@@ -5,11 +5,11 @@ exports.seed = function(knex) {
     .then(function () {
       // Inserts seed entries
       return knex('clients').insert([
-        { name: 'john doe', email: 'johndoe@gmail.com' },
-        { name: 'jane doe', email: 'janedoe@mybusiness.com' },
-        { name: 'jon smith', email: 'jsmith@aol.com' },
-        { name: 'debbie dallas', email: 'doubled@yahoo.com' },
-        { name: 'danny boy', email: 'coffiedan@gmail.com' }
+        { name: 'john doe', password: 'password123', email: 'johndoe@gmail.com' },
+        { name: 'jane doe', password: 'password123', email: 'janedoe@mybusiness.com' },
+        { name: 'jon smith', password: 'password123', email: 'jsmith@aol.com' },
+        { name: 'debbie dallas', password: 'password123', email: 'doubled@yahoo.com' },
+        { name: 'danny boy', password: 'password123', email: 'coffiedan@gmail.com' }
       ]);
     });
 };
